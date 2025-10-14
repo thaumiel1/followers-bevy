@@ -19,7 +19,7 @@ fn main() {
     let mut app = App::new();
     app.add_plugins(DefaultPlugins);
     app.add_systems(Startup, setup);
-    app.add_systems(Update, cursor_position);
+    app.add_systems(Update, update_movement);
     app.run();
 }
 
@@ -51,34 +51,32 @@ fn setup(
     ));
 }
 
-fn update_movement(query: Query<(&mut Movement)>, window: Single<&Window, With<PrimaryWindow>>) {
-    if let Some(position) = window.cursor_position() {}
-}
-
-fn cursor_position(window: Single<&Window, With<PrimaryWindow>>) {
-    if let Some(position) = window.cursor_position() {
-        println!("Cursor is inside the primary window, at {:?}", position);
-    } else {
-        println!("Cursor is not in the game window.");
-    }
+fn update_movement(
+    query: Query<(&mut Movement)>,
+    camera_query: Query<(&Camera, &GlobalTransform)>,
+    window_query: Query<&Window, With<PrimaryWindow>>,
+) {
+    if let Some(position) = get_cursor(camera_query, window_query) {}
 }
 
 fn get_cursor(
     camera_query: Query<(&Camera, &GlobalTransform)>,
     window_query: Query<&Window, With<PrimaryWindow>>,
-) {
+) -> Option<Vec2> {
     let Ok((camera, camera_transform)) = camera_query.single() else {
-        return;
+        return None;
     };
     let Ok(window) = window_query.single() else {
-        return;
+        return None;
     };
     let Some(cursor_position) = window.cursor_position() else {
-        return;
+        return None;
     };
     // Convert cursor position to world coordinates using viewport_to_world_2d
     let Ok(cursor_world_pos) = camera.viewport_to_world_2d(camera_transform, cursor_position)
     else {
-        return;
+        return None;
     };
+    println!("cursor position: {:?}", cursor_world_pos);
+    return Some(cursor_world_pos);
 }
