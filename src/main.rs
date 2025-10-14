@@ -35,9 +35,9 @@ fn setup(
         Follower,
         Mesh2d(meshes.add(Ellipse::new(5.0, 10.0))),
         MeshMaterial2d(materials.add(Color::hsv(
-            rng.random_range(0.0..1.0),
-            rng.random_range(0.0..1.0),
-            rng.random_range(0.0..1.0),
+            rng.random_range(0.0..=1.0),
+            rng.random_range(0.0..=1.0),
+            rng.random_range(0.0..=1.0),
         ))),
         Transform::from_xyz(0.0, 0.0, 0.0),
         Movement {
@@ -46,17 +46,28 @@ fn setup(
             inertia: 2.0,
             direction: 0.0,
             turn_speed: 10.0,
-            accelerating: false,
+            accelerating: true,
         },
     ));
 }
 
 fn update_movement(
-    query: Query<(&mut Movement)>,
+    mut query: Query<(&mut Movement, &GlobalTransform), With<Follower>>,
     camera_query: Query<(&Camera, &GlobalTransform)>,
     window_query: Query<&Window, With<PrimaryWindow>>,
 ) {
-    if let Some(position) = get_cursor(camera_query, window_query) {}
+    if let Some(position) = get_cursor(camera_query, window_query) {
+        for entity in query.iter_mut().collect::<Vec<_>>() {
+            let x = entity.1.translation().x;
+            let y = entity.1.translation().y;
+            let entity_pos = Vec2::new(x, y);
+            println!("{}", get_bearing(entity_pos, position));
+        }
+    }
+}
+
+fn get_bearing(a: Vec2, b: Vec2) -> f32 {
+    a.angle_to(b)
 }
 
 fn get_cursor(
@@ -77,6 +88,6 @@ fn get_cursor(
     else {
         return None;
     };
-    println!("cursor position: {:?}", cursor_world_pos);
+    //println!("cursor position: {:?}", cursor_world_pos);
     return Some(cursor_world_pos);
 }
