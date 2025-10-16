@@ -4,9 +4,9 @@ use rand::prelude::*;
 
 #[derive(Component)]
 struct Movement {
-    velocity: f64,
-    acceleration: f64,  // Rate of gaining speed
-    inertia: f64,       // Rate of slowing
+    velocity: f32,
+    acceleration: f32,  // Rate of gaining speed
+    inertia: f32,       // Energy held by the follower
     accelerating: bool, // True if speeding up, false if slowing down
 }
 
@@ -46,7 +46,7 @@ fn setup(
         Movement {
             velocity: 0.0,
             acceleration: 1.0,
-            inertia: 2.0,
+            inertia: 1.0,
             accelerating: true,
         },
         RotateToCursor { turn_speed: 1.5 },
@@ -54,16 +54,15 @@ fn setup(
 }
 
 fn update_movement(
-    mut query: Query<(&mut Movement, &GlobalTransform), With<Follower>>,
+    mut query: Query<(&mut Movement, &Transform), With<Follower>>,
     camera_query: Query<(&Camera, &GlobalTransform)>,
     window_query: Query<&Window, With<PrimaryWindow>>,
+    time: Res<Time>,
 ) {
-    if let Some(_position) = get_cursor(camera_query, window_query) {
-        for entity in query.iter_mut().collect::<Vec<_>>() {
-            let x = entity.1.translation().x;
-            let y = entity.1.translation().y;
-            let _entity_pos = Vec2::new(x, y);
-        }
+    for entity in query.iter_mut().collect::<Vec<_>>() {
+        let (mut movement, mut transform) = entity;
+        let direction = transform.local_x();
+        transform.translation += direction * *movement.velocity * time.delta_secs();
     }
 }
 
