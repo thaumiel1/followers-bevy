@@ -58,11 +58,11 @@ fn update_movement(
     camera_query: Query<(&Camera, &GlobalTransform)>,
     window_query: Query<&Window, With<PrimaryWindow>>,
 ) {
-    if let Some(position) = get_cursor(camera_query, window_query) {
+    if let Some(_position) = get_cursor(camera_query, window_query) {
         for entity in query.iter_mut().collect::<Vec<_>>() {
             let x = entity.1.translation().x;
             let y = entity.1.translation().y;
-            let entity_pos = Vec2::new(x, y);
+            let _entity_pos = Vec2::new(x, y);
         }
     }
 }
@@ -92,8 +92,8 @@ fn get_cursor(
 fn rotate_to_cursor(
     time: Res<Time>,
     mut query: Query<(&RotateToCursor, &mut Transform), With<Follower>>,
-    mut camera_query: Query<(&Camera, &GlobalTransform)>,
-    mut window_query: Query<&Window, With<PrimaryWindow>>,
+    camera_query: Query<(&Camera, &GlobalTransform)>,
+    window_query: Query<&Window, With<PrimaryWindow>>,
 ) {
     let cursor_translation = get_cursor(camera_query, window_query).unwrap_or(Vec2::ZERO);
 
