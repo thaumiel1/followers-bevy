@@ -30,7 +30,7 @@ fn setup(
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<ColorMaterial>>,
 ) {
-    commands.spawn(Camera2d::default());
+    commands.spawn(Camera2d);
     let mut rng = rand::rng();
 
     commands.spawn((
@@ -103,7 +103,7 @@ fn rotate_to_cursor(
         let follower_forward = (follower_transform.rotation * Vec3::Y).xy();
         let to_player = (cursor_translation - follower_transform.translation.xy()).normalize();
         let forward_dot_player = follower_forward.dot(to_player);
-        if forward_dot_player.abs() < 0.19209290e-07_f32 {
+        if forward_dot_player.abs() < 1.920_929e-8_f32 {
             movement.accelerating = true;
             continue;
         }
