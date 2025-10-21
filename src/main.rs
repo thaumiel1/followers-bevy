@@ -64,11 +64,12 @@ fn update_movement(
     for entity in query.iter_mut().collect::<Vec<_>>() {
         let (mut movement, mut transform) = entity;
         let direction = transform.local_y();
-        movement.velocity += movement.acceleration * time.delta_secs();
-        if !movement.accelerating {
+        if movement.accelerating {
+            movement.velocity += movement.acceleration * time.delta_secs();
+        } else {
             movement.velocity -= movement.acceleration * time.delta_secs();
-            if movement.velocity < 0.0 {
-                movement.velocity = 0.0;
+            if movement.velocity < 1.0 {
+                movement.velocity = 1.0;
             }
         }
         transform.translation += direction * movement.velocity * time.delta_secs();
