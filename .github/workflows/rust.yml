@@ -13,9 +13,11 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
+        
 
     steps:
     - uses: actions/checkout@v4
+    - run: sudo apt install mold 
     - name: Build
       run: cargo build --verbose
     - name: Run tests
