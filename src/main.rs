@@ -33,7 +33,7 @@ fn setup(
     commands.spawn(Camera2d);
     let mut rng = rand::rng();
 
-    for _ in 0..6000 {
+    for _ in 0..5000 {
         commands.spawn((
             Follower,
             Mesh2d(meshes.add(Ellipse::new(5.0, 10.0))),
